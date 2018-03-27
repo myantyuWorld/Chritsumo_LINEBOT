@@ -2,10 +2,9 @@
 import os                       # ポート指定のため
 import re                       # 正規表現
 from flask_cors import CORS     # CORS対策クロスオーバーリソースシェアリング
+import gspread                  # GoogleSpreadSheetをいじるライブラリ
 from flask import Flask, request,abort, jsonify    # Flask, JSON用  
-app = Flask(__name__)
-CORS(app) # <-追加
-
+from oauth2client.service_account import ServiceAccountCredentials#OAuth認証ライブラリ
 from linebot import (
     LineBotApi, WebhookHandler
 )
@@ -15,10 +14,22 @@ from linebot.exceptions import (
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage,
 )
-
 app = Flask(__name__)
 CORS(app) # <-追加
 
+####################################################################
+#   GoogleSpreadSheet
+####################################################################
+SCOPE = ['https://www.googleapis.com/auth/spreadsheets.readonly']
+CLIENT_SECRET_FILE = 'client_secret.json'
+APPLICATION_NAME = 'Google Sheets API Python Quickstart'
+# 3でダウンロードしたjsonファイルを指定する
+credentials = ServiceAccountCredentials.from_json_keyfile_name(CLIENT_SECRET_FILE, SCOPE)
+gc = gspread.authorize(credentials)
+
+####################################################################
+#   LINEBOT 
+####################################################################
 line_bot_api = LineBotApi('R2vbh31gaxRKyyxQUG1/p6EsU0q+62QSwzVWM1oJR6MlKhnz3hCjSqCrb/ujvB9wEnd7zwinxx7IPjLX99g5X96LlLTWW9mPnEtrkhvqD/tErljr0Q+eWIiWZLNfpnZyZyLJ6oAMJN7+w5DJnj4tigdB04t89/1O/w1cDnyilFU=')
 handler = WebhookHandler('31aa9cd757b40ca322a14be96846a13a')
 
@@ -55,30 +66,28 @@ def handle_message(event):
     text = event.message.text
     print(text)
     if  text.find("食費") > -1:                           
-        line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text="何円ですか？"))
+        text = "何円ですか？"
 
     elif text.find("ファッション") > -1:
-        line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text="何円ですか？"))
+       text = "何円ですか？"
 
     elif text.find("交際費") > -1:
-        line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text="何円ですか？"))
+        text = "何円ですか？"
 
     elif re.search(r'[0-9]', text):
         print("数字含む")
+        # ここで、スプレッドシートのくだりする
+        text = "OK~~~"
 
     else :
         category = text.split(" ")
         print(category)
         
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=event.message.text))
+        
+
+    line_bot_api.reply_message(
+    event.reply_token,
+    TextSendMessage(text=text))
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
