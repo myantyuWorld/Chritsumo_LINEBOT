@@ -48,14 +48,14 @@ def sheet():
     sheet = get_authorize_sheet() # 下記参照
     # -------------------------------------------
 
-    val = sheet.acell(dict["食費"]).value
-    print(val)
-    print(dict)
-    print(dict["食費"])
-    records = sheet.get_all_records()
+    # val = sheet.acell(dict["食費"]).value
+    # print(val)
+    # print(dict)
+    # print(dict["食費"])
+    # records = sheet.get_all_records()
 
-    for r in records:
-        print(r)
+    # for r in records:
+    #     print(r)
 
     return 'this api is /google sheet api!' # flaskでは何か返さないとエラーになるようだ
 
