@@ -93,14 +93,14 @@ def handle_message(event):
         money = int(val.replace(',','')) + int(wk_money) # 金額を足しこむ
 
         sheet.update_acell(dict[chars[0]], money) # 金額を更新する        
-        text = "累計金額 : " + str(money)
+        text = "----------------------------------------\n累計金額 : ￥{:,d}".format(money) + "\n----------------------------------------"
 
     elif text.find("使い方") > -1:
         text = 'ex) 食費 1000 のように送信してねー\n使えるカテゴリ : \n{}\n{}\n{}\n{}\n{}'.format('食費','交通','お小遣い','電気ガス','水道')
 
     else:
         val = sheet.acell(dict[text.split(" ")[0]]).value
-        text = text.split(" ")[0] + "は現在 " + val
+        text = "----------------------------------------\n" + text.split(" ")[0] + "は現在 " + val + "\n----------------------------------------"
 
     line_bot_api.reply_message(
     event.reply_token,
